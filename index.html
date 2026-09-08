@@ -982,6 +982,14 @@ function readPdf(files){
 }
 
 /* ===================== construcción del HTML unido ===================== */
+// Atribucion del documento generado. Sobrevive de tres formas: comentario
+// y <meta generator> en el HTML, metadatos del PDF unido, y un pie discreto
+// que es lo unico que queda si el usuario imprime el HTML a PDF.
+var MARCA = {
+  nombre: "Notebooks",
+  url: "derkhox.github.io/Notebooks"
+};
+
 var PRINT_CSS = [
   '@page { size: A4; margin: 16mm 13mm; }',
   'html, body { background:#fff; }',
@@ -1013,6 +1021,8 @@ var PRINT_CSS = [
   '.hj-cover .hj-f .k { font-family:"DM Mono",monospace; font-size:10.5px; letter-spacing:.09em;',
   '  text-transform:uppercase; color:#807869; display:block; margin-bottom:1px; }',
   '.hj-cover .hj-date { font-family:"DM Mono",monospace; font-size:12px; color:#5c5449; margin:9mm 0 0; }',
+  '.hj-mark { margin: 14mm 0 0; text-align: center; font-family:"DM Mono",monospace;',
+  '  font-size: 6pt; letter-spacing: .08em; color: #cfc8bb; }',
   '@media print {',
   '  .jp-Cell, .jp-OutputArea-child, figure, table { break-inside: avoid; }',
   '  .jp-Notebook, main, body { overflow: visible !important; }',
@@ -1078,8 +1088,11 @@ function buildHTML(withScripts){
   });
 
   var title = ($("fname").value || "trabajo").trim();
-  var out = ["<!DOCTYPE html>", '<html lang="es">', '<head><meta charset="utf-8">',
+  var out = ["<!DOCTYPE html>",
+    "<!-- Compuesto con " + MARCA.nombre + " - " + MARCA.url + " -->",
+    '<html lang="es">', '<head><meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
+    '<meta name="generator" content="' + MARCA.nombre + " (" + MARCA.url + ')">',
     "<title>" + esc(title) + "</title>",
     '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=DM+Mono:wght@400&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap">'];
 
@@ -1109,6 +1122,7 @@ function buildHTML(withScripts){
     out.push("<\/section>");
   });
 
+  out.push('<p class="hj-mark">' + MARCA.nombre + " &middot; " + MARCA.url + "<\/p>");
   out.push("<\/main><\/body><\/html>");
   return out.join("\n");
 }
@@ -1518,7 +1532,8 @@ function mergePdf(){
     });
     return chain.then(function(){
       out.setTitle(cleanName());
-      out.setCreator("Notebooks");
+      out.setCreator(MARCA.nombre + " (" + MARCA.url + ")");
+      out.setProducer(MARCA.nombre + " (" + MARCA.url + ")");
       return out.save();
     });
   }).then(function(bytes){
