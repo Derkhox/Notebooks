@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="Une varios HTML o PDF en un solo documento, en el orden que elijas, y lo deja listo para guardar como PDF.">
+<meta name="description" content="Une varios notebooks exportados en HTML, o varios PDF, en un solo documento listo para guardar como PDF.">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; frame-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<title>Encuadernador</title>
+<title>Notebooks</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
@@ -565,7 +565,7 @@ input{font:inherit}
       </svg>
     </div>
     <div class="wordmark">
-      <h1>Encuadernador</h1>
+      <h1>Notebooks</h1>
       <p>Junta tus archivos en un solo PDF</p>
     </div>
     <div class="themer">
@@ -789,9 +789,18 @@ function recall(key){
   try { return localStorage.getItem(key); } catch (e){ return null; }
 }
 
+// Rescata lo guardado con el nombre anterior de la aplicacion.
+(function migrar(){
+  [["encuadernador.tema", "notebooks.tema"],
+   ["encuadernador.portada.v2", "notebooks.portada.v1"]].forEach(function(par){
+    var viejo = recall(par[0]);
+    if (viejo !== null && recall(par[1]) === null) store(par[1], viejo);
+  });
+})();
+
 /* ===================== tema ===================== */
 (function theme(){
-  var saved = recall("encuadernador.tema");
+  var saved = recall("notebooks.tema");
   if (saved === "dark" || saved === "light"){
     document.documentElement.setAttribute("data-theme", saved);
   }
@@ -802,7 +811,7 @@ function recall(key){
 
   function set(mode){
     document.documentElement.setAttribute("data-theme", mode);
-    store("encuadernador.tema", mode);
+    store("notebooks.tema", mode);
     paint();
   }
   function paint(){
@@ -1346,7 +1355,7 @@ window.addEventListener("drop", function(e){
 
 /* ===================== portada ===================== */
 (function coverPanel(){
-  var KEY = "encuadernador.portada.v2";
+  var KEY = "notebooks.portada.v1";
   try {
     var saved = JSON.parse(recall(KEY) || "{}");
     Object.keys(cover).forEach(function(k){
@@ -1506,7 +1515,7 @@ function mergePdf(){
     });
     return chain.then(function(){
       out.setTitle(cleanName());
-      out.setCreator("Encuadernador");
+      out.setCreator("Notebooks");
       return out.save();
     });
   }).then(function(bytes){

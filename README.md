@@ -1,6 +1,6 @@
-# Encuadernador
+# Notebooks
 
-Une varios archivos HTML o PDF en un solo documento, en el orden que elijas, y lo deja listo para guardar como PDF.
+Une varios notebooks exportados en HTML, o varios PDF, en un solo documento en el orden que elijas, y lo deja listo para guardar como PDF.
 
 Pensado para juntar notebooks de Jupyter exportados con `nbconvert`, aunque funciona con cualquier HTML.
 
